@@ -1,15 +1,16 @@
 {
-  "name": "peke-cpu",
+  "name": "peke-cpu-emu",
   "version": "1.0.0",
-  "description": "",
+  "description": "a toy TD4 cpu emulater",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "rchaser53",
+  "license": "MIT",
   "devDependencies": {
+    "jest": "^22.4.2",
     "prettier": "^1.11.1"
   }
 }
