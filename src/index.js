@@ -31,6 +31,7 @@ const MoveBA = 0b0100
 const InA = 0b0010
 const InB = 0b0110
 const OutB = 0b1001
+const OutBFromIm = 0b1000
 
 const execute = (input, memories) => {
   for (programCounter = 0; programCounter < memories.length; programCounter++) {
@@ -42,6 +43,7 @@ const execute = (input, memories) => {
     if (doInA(command, imidiateData, input)) continue
     if (doInB(command, imidiateData, input)) continue
     if (doOutB(command, imidiateData, input)) continue
+    if (doOutBFromIm(command, imidiateData, input)) continue
     
     if (doAddAFromIm(command, imidiateData, input)) continue
     if (doAddBFromIm(command, imidiateData, input)) continue
@@ -139,6 +141,15 @@ const doOutB = (command, imidiateData, input) => {
   return false
 }
 
+const doOutBFromIm = (command, imidiateData, input) => {
+  if ((command ^ OutBFromIm) === 0b0) {
+    outputLog(imidiateData)
+    return true
+  }
+  return false
+}
+
+
 // utility
 const getOrder = (memory) => memory >>> 0b100
 const getImidateData = (memory) => memory & 0b00001111
@@ -158,7 +169,8 @@ const outputLog = (data) => {
 const Memories = [
   createMemoryData(InA, 0b0000),
   createMemoryData(MoveBA, 0b0000),
-  createMemoryData(AddAFromIm, 0b0001),
+  createMemoryData(AddAFromIm, 0b0011),
+  createMemoryData(OutBFromIm, 0b1001),
   createMemoryData(JncIm, 0b0010),
   createMemoryData(OutB, 0b0000)
 ]
