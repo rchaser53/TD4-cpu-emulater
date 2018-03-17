@@ -2,12 +2,7 @@ let MemoryA = 0b00000000
 let MemoryB = 0b00100111
 let MemoryC = 0b11000000
 
-const Memories = [
-  MemoryA,
-  MemoryB,
-  MemoryC
-]
-
+// registers
 let RegisterA = 0b00000
 let RegisterB = 0b00000
 
@@ -17,15 +12,12 @@ let carryFlag = 0b0
 // pointer
 let programCounter = 0
 
-const add = (a, b) => {
-    while (b !== 0b0) {
-        let c = (a & b) << 0b1;
-        a ^= b;
-        b = c;
-    }
-    return a;
+const createMemoryData = (order, imidiateData) => {
+  const shiftOrder = order << 0b100
+  return shiftOrder | imidiateData
 }
 
+// definition
 const AddAFromIm = 0b0000
 const AddBFromIm = 0b0101
 const MoveAFromIm = 0b0011
@@ -42,8 +34,8 @@ const OutB = 0b1001
 
 const execute = (input, memories) => {
   for (programCounter = 0; programCounter < memories.length; programCounter++) {
-    const command = getOrder(memories[i])
-    const imidiateData = getImidateData(memories[i])
+    const command = getOrder(memories[programCounter])
+    const imidiateData = getImidateData(memories[programCounter])
 
     if (doMoveAB(command, imidiateData, input)) continue
     if (doMoveBA(command, imidiateData, input)) continue
@@ -116,14 +108,6 @@ const doMoveAB = (command, imidiateData, input) => {
   return false
 }
 
-const doMoveAB = (command, imidiateData, input) => {
-  if ((command ^ MoveAB) === 0b0) {
-    RegisterB = RegisterA
-    return true
-  }
-  return false
-}
-
 const doMoveBA = (command, imidiateData, input) => {
   if ((command ^ MoveBA) === 0b0) {
     RegisterA = RegisterB
@@ -149,7 +133,7 @@ const doInB = (command, imidiateData, input) => {
 
 const doOutB = (command, imidiateData, input) => {
   if ((command ^ OutB) === 0b0) {
-    console.log(RegisterB)
+    outputLog(RegisterB)
     return true
   }
   return false
@@ -158,9 +142,23 @@ const doOutB = (command, imidiateData, input) => {
 // utility
 const getOrder = (memory) => memory >>> 0b100
 const getImidateData = (memory) => memory & 0b00001111
+const add = (a, b) => {
+  while (b !== 0b0) {
+      let c = (a & b) << 0b1;
+      a ^= b;
+      b = c;
+  }
+  return a;
+}
 
 const outputLog = (data) => {
   console.log(data.toString(2))
 }
 
+const Memories = [
+  createMemoryData(InB, 0b0011),
+  createMemoryData(OutB, 0b0011)
+]
 execute(0b0111, Memories)
+
+module.exports = execute
