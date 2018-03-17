@@ -32,7 +32,7 @@ const add = (a, b) => {
 const run = (input, memories) => {
   for (let i = 0; i < memories.length; i++) {
     const command = memories[i] >>> 0b100
-    
+    const imidiateData = memories[i] & 0b00001111
     if ((command ^ 0b0010) === 0b0) {
       console.log('nya-n')
     }
