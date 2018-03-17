@@ -65,7 +65,7 @@ const execute = (input, memories) => {
 
 const doAddAFromIm = (command, imidiateData, input) => {
   if ((command ^ AddAFromIm) === 0b0) {
-    RegisterA += imidiateData 
+    RegisterA = add(RegisterA, imidiateData)
 
     if (RegisterA >>> 0b100 === 0b1) {
       carryFlag = 0b1
@@ -78,7 +78,7 @@ const doAddAFromIm = (command, imidiateData, input) => {
 
 const doAddBFromIm = (command, imidiateData, input) => {
   if ((command ^ AddBFromIm) === 0b0) {
-    RegisterB += imidiateData
+    RegisterB = add(RegisterB, imidiateData)
     return true
   }
   return false
@@ -156,8 +156,10 @@ const outputLog = (data) => {
 }
 
 const Memories = [
-  createMemoryData(InA, 0b0011),
+  createMemoryData(InA, 0b0000),
   createMemoryData(MoveBA, 0b0000),
+  createMemoryData(AddAFromIm, 0b0001),
+  createMemoryData(JncIm, 0b0010),
   createMemoryData(OutB, 0b0000)
 ]
 execute(0b0111, Memories)
