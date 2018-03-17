@@ -102,7 +102,7 @@ const doMoveBFromIm = (command, imidiateData, input) => {
 
 const doMoveAB = (command, imidiateData, input) => {
   if ((command ^ MoveAB) === 0b0) {
-    RegisterB = RegisterA
+    RegisterA = RegisterB
     return true
   }
   return false
@@ -110,7 +110,7 @@ const doMoveAB = (command, imidiateData, input) => {
 
 const doMoveBA = (command, imidiateData, input) => {
   if ((command ^ MoveBA) === 0b0) {
-    RegisterA = RegisterB
+    RegisterB = RegisterA
     return true
   }
   return false
@@ -156,8 +156,9 @@ const outputLog = (data) => {
 }
 
 const Memories = [
-  createMemoryData(InB, 0b0011),
-  createMemoryData(OutB, 0b0011)
+  createMemoryData(InA, 0b0011),
+  createMemoryData(MoveBA, 0b0000),
+  createMemoryData(OutB, 0b0000)
 ]
 execute(0b0111, Memories)
 
