@@ -7,7 +7,7 @@ let RegisterA = 0b00000
 let RegisterB = 0b00000
 
 // for JNC order, true => ignore and false => jump to imidiate data
-let carryFlag = 0b0
+let CarryFlag = 0b0
 
 // pointer
 let programCounter = 0
@@ -34,119 +34,103 @@ const OutB = 0b1001
 const OutBFromIm = 0b1000
 
 const execute = (input, memories) => {
-  for (programCounter = 0; programCounter < memories.length; programCounter++) {
-    const command = getOrder(memories[programCounter])
-    const imidiateData = getImidateData(memories[programCounter])
+  if (memories.length < programCounter) return
+  const command = getOrder(memories[programCounter])
+  const imidiateData = getImidateData(memories[programCounter])
 
-    if (doMoveAB(command, imidiateData, input)) continue
-    if (doMoveBA(command, imidiateData, input)) continue
-    if (doInA(command, imidiateData, input)) continue
-    if (doInB(command, imidiateData, input)) continue
-    if (doOutB(command, imidiateData, input)) continue
-    if (doOutBFromIm(command, imidiateData, input)) continue
-    
-    if (doAddAFromIm(command, imidiateData, input)) continue
-    if (doAddBFromIm(command, imidiateData, input)) continue
-    if (doMoveAFromIm(command, imidiateData, input)) continue
-    if (doMoveBFromIm(command, imidiateData, input)) continue
-    
-    if ((command ^ JmpIm) === 0b0) {
-      programCounter = parseInt(imidiateData.toString(2), 2) - 1;
-      continue
-    }
-
-    if ((command ^ JncIm) === 0b0) {
-      if (carryFlag === 0b1) {
-        carryFlag = 0b0
-        continue
-      }
-      programCounter = parseInt(imidiateData.toString(2), 2) - 1;
-    }
+  doMoveAB(command, imidiateData, input, memories)
+  doMoveBA(command, imidiateData, input, memories)
+  doInA(command, imidiateData, input, memories)
+  doInB(command, imidiateData, input, memories)
+  doOutB(command, imidiateData, input, memories)
+  doOutBFromIm(command, imidiateData, input, memories)
+  
+  doAddAFromIm(command, imidiateData, input, memories)
+  doAddBFromIm(command, imidiateData, input, memories)
+  doMoveAFromIm(command, imidiateData, input, memories)
+  doMoveBFromIm(command, imidiateData, input, memories)
+  
+  if ((command ^ JmpIm) === 0b0) {
+    programCounter = parseInt(imidiateData.toString(2), 2) - 1
+    return execute(input, memories)
   }
+
+  if ((command ^ JncIm) === 0b0) {
+    if (CarryFlag === 0b1) {
+      CarryFlag = 0b0
+      programCounter = add(programCounter, 0b1)
+      return execute(input, memories)
+    }
+    programCounter = parseInt(imidiateData.toString(2), 2) - 1
+    return execute(input, memories)
+  }
+
+  programCounter = add(programCounter, 0b1)
+  execute(input, memories)
 }
 
-const doAddAFromIm = (command, imidiateData, input) => {
+const doAddAFromIm = (command, imidiateData, input, memories) => {
   if ((command ^ AddAFromIm) === 0b0) {
     RegisterA = add(RegisterA, imidiateData)
 
     if (RegisterA >>> 0b100 === 0b1) {
-      carryFlag = 0b1
+      CarryFlag = 0b1
     }
-
-    return true
   }
-  return false
 }
 
-const doAddBFromIm = (command, imidiateData, input) => {
+const doAddBFromIm = (command, imidiateData, input, memories) => {
   if ((command ^ AddBFromIm) === 0b0) {
     RegisterB = add(RegisterB, imidiateData)
-    return true
   }
-  return false
 }
 
-const doMoveAFromIm = (command, imidiateData, input) => {
+const doMoveAFromIm = (command, imidiateData, input, memories) => {
   if ((command ^ MoveAFromIm) === 0b0) {
     RegisterA = imidiateData
-    return true
   }
-  return false
 }
 
-const doMoveBFromIm = (command, imidiateData, input) => {
+const doMoveBFromIm = (command, imidiateData, input, memories) => {
   if ((command ^ MoveBFromIm) === 0b0) {
     RegisterB = imidiateData
-    return true
   }
-  return false
 }
 
-const doMoveAB = (command, imidiateData, input) => {
+const doMoveAB = (command, imidiateData, input, memories) => {
   if ((command ^ MoveAB) === 0b0) {
     RegisterA = RegisterB
-    return true
   }
-  return false
 }
 
-const doMoveBA = (command, imidiateData, input) => {
+const doMoveBA = (command, imidiateData, input, memories) => {
   if ((command ^ MoveBA) === 0b0) {
     RegisterB = RegisterA
-    return true
   }
-  return false
 }
 
-const doInA = (command, imidiateData, input) => {
+const doInA = (command, imidiateData, input, memories) => {
   if ((command ^ InA) === 0b0) {
     RegisterA = input
-    return true
   }
-  return false
 }
 
-const doInB = (command, imidiateData, input) => {
+const doInB = (command, imidiateData, input, memories) => {
   if ((command ^ InB) === 0b0) {
     RegisterB = input
   }
-  return false
 }
 
-const doOutB = (command, imidiateData, input) => {
+const doOutB = (command, imidiateData, input, memories) => {
   if ((command ^ OutB) === 0b0) {
     outputLog(RegisterB)
-    return true
   }
-  return false
 }
 
-const doOutBFromIm = (command, imidiateData, input) => {
+const doOutBFromIm = (command, imidiateData, input, memories) => {
   if ((command ^ OutBFromIm) === 0b0) {
     outputLog(imidiateData)
-    return true
   }
-  return false
 }
 
 
