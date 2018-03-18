@@ -34,6 +34,7 @@ const OutB = 0b1001
 const OutBFromIm = 0b1000
 
 const execute = (input, memories) => {
+  // need to remove to imitate electronic circuit?
   if (memories.length < programCounter) return
   const command = getOrder(memories[programCounter])
   const imidiateData = getImidateData(memories[programCounter])

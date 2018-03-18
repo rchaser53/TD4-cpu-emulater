@@ -2,6 +2,8 @@
 
 this is a simple TD4 cpu emulater
 
+i try to imitate a electric circuit. so restrict not to use syntax
+
 ## how to play
 
 ```
